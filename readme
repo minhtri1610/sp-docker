@@ -1,17 +1,75 @@
-docker build -t my-web-server .
+# docker build -t my-web-server .
 
-docker run -p 8080:80 -p 3306:3306 -d -v D:/Javac/Sources/cpr-local:/home/sites/cpr my-web-server
+# docker run -p 8080:80 -p 3306:3306 -d -v D:/Javac/Sources/cpr-local:/home/sites/cpr my-web-server
 
-docker exec -it 6051e9c59025 /bin/bash
-
-apt-get install php-dom
-apt-get install php-zip
+# docker exec -it 6051e9c59025 /bin/bash
+# docker exec -it 71e6410964ab /bin/bash
 
 
-#composer
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === 'edb40769019ccf227279e3bdd1f5b2e9950eb000c3233ee85148944e555d97be3ea4f40c3c2fe73b22f875385f6a5155') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
+# apt-get install php-dom
+# apt-get install php-zip
 
+
+# #composer
+# php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+# php -r "if (hash_file('sha384', 'composer-setup.php') === 'edb40769019ccf227279e3bdd1f5b2e9950eb000c3233ee85148944e555d97be3ea4f40c3c2fe73b22f875385f6a5155') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+# php composer-setup.php
+# php -r "unlink('composer-setup.php');"
+
+# mv composer.phar /usr/local/bin/composer
+
+# docker up -p 8080:80 -p 3306:3306 -d -v D:/Javac/Sources/cpr-local:/home/sites/cpr my-web-server
+
+# curl, vim
+
+# docker build -t my-web-server2 .
+# docker run -p 8080:80 -p 3306:3306 -p 443:443 -d -v D:/Javac/Sources/cpr-local:/var/www/html/sendportal my-web-server2
+
+#docker
+
+docker build -t my-web-server2 .
+docker run -p 8080:80 -p 3306:3306 -p 443:443 -d -v D:/Javac/docker/sources:/var/www/html/sendportal my-web-server2
+#composer install
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+php composer-setup.php \
+php -r "unlink('composer-setup.php');"\
 mv composer.phar /usr/local/bin/composer
+
+#clone sendportal
+git clone https://github.com/mettle/sendportal.git
+
+#mysql
+mysql_secure_installation
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'DpdsVCt6q7';
+mysql -u root  -p
+CREATE DATABASE db_sp_cpraed;
+service mysql restart
+
+#
+a2enmod rewrite
+service apache2 reload
+
+
+vi /etc/apache2/sites-available/sendportal-test.conf
+
+cd /etc/apache2/sites-available && a2ensite sendportal-test.conf
+service apache2 reload
+
+apt install curl
+
+vi composer.json
+"php": "^7.3|^8.0",
+apt-get install php-curl
+#composer
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan vendor:publish --provider=Sendportal\\Base\\SendportalBaseServiceProvider
+php artisan sp:install
+
+cd /var/www/html/sendportal && chown -Rf www-data:www-data ./*
+
+#vi /etc/hosts
+url-> http://localhost:8080/
+
+#D:\Javac\Sources\cpr-local\sendportal

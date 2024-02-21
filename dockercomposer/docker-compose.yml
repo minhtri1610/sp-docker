@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  web:
+    image: ubuntu:22.04
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+      - "22:22"
+    volumes:
+      - .:/var/www/html/sendportal
+      - ./.env:/var/www/html/sendportal/.env
+    command: /bin/bash -c "/usr/sbin/apache2ctl -D FOREGROUND"
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: DpdsVCt6q7
+      MYSQL_DATABASE: db_sp_cpraed
+      MYSQL_USER: root
+      MYSQL_PASSWORD: DpdsVCt6q7
+
+  composer:
+    image: ubuntu:22.04
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html/sendportal
+    command: /bin/bash -c "apt-get update && apt-get install -y php7.4 git && apt-get install -y php-mysql php-dom php-zip && apt-get install -y vim && php -r 'copy('https://getcomposer.org/installer', 'composer-setup.php');' && php composer-setup.php && php -r 'unlink('composer-setup.php');' && mv composer.phar /usr/local/bin/composer"
+
+networks:
+  default:
